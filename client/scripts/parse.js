@@ -9,11 +9,15 @@ var Parse = {
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
-      success: successCB,
+      success: successCB || function (data) {
+        console.log(Messages._data);
+      },
       error: errorCB || function (error) {
+        console.log(message);
         console.error('chatterbox: Failed to create message', error);
       }
     });
+    console.log(Messages._data);
   },
 
   readAll: function(successCB, errorCB = null) {
@@ -23,6 +27,7 @@ var Parse = {
       contentType: 'application/json',
       success: successCB,
       error: errorCB || function(error) {
+        console.log(message)
         console.error('chatterbox: Failed to fetch messages', error);
       }
     });

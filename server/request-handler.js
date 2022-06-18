@@ -36,6 +36,7 @@ var requestHandler = function(request, response) {
   var statusCode = 200;
 
   // See the note below about CORS headers.
+  // eslint-disable-next-line no-use-before-define
   var headers = defaultCorsHeaders;
 
 
@@ -67,8 +68,9 @@ var requestHandler = function(request, response) {
       //
       // Calling .end "flushes" the response's internal buffer, forcing
       // node to actually send all the data over to the client.
+
       response.end(JSON.stringify(messages));
-   // if req is POST gather and add chucks to make body and add Data to messages
+      // if req is POST gather and add chucks to make body and add Data to messages
     } else if (request.method === 'POST') {
       statusCode = 201;
       response.writeHead(statusCode, headers);
@@ -79,11 +81,15 @@ var requestHandler = function(request, response) {
       });
       //if username or text is invalid return 400
 
-        request.on('end', () => {
+      request.on('end', () => {
+        var messageObj = JSON.parse(body);
+        // eslint-disable-next-line camelcase
+        messageObj.message_id = messages.length + 1;
 
-          messages.unshift(JSON.parse(body));
-          response.end('ok');
-        });
+        messages.unshift(messageObj);
+        console.log(messages.length);
+        response.end(JSON.stringify(messages));
+      });
 
       //if req is PUT or PATCH return 403 not Auth
     } else if (request.method === 'PUT' || request.method === 'PATCH') {
@@ -91,6 +97,7 @@ var requestHandler = function(request, response) {
       response.writeHead(statusCode, headers);
       response.end(JSON.stringify('403 not AUTH'));
     } else {
+      //options req, return code 200
       statusCode = 200;
       response.writeHead(statusCode, headers);
       response.end(JSON.stringify('request fulfilled'));
